@@ -5,6 +5,7 @@
   "main": "bttn.js",
   "dependencies": {
     "moltin": "^1.0.0",
+    "express": "^4.14.0",
     "body-parser": "^1.15.2",
     "request": "^2.78.0"
   },

@@ -1,0 +1,19 @@
+{
+  "name": "bttn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bttn.js",
+  "dependencies": {
+    "moltin": "^1.0.0",
+    "body-parser": "^1.15.2",
+    "request": "^2.78.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

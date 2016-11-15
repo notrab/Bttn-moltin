@@ -1,5 +1,3 @@
-# Bttn
-
 ![alt tag](https://github.com/matthew1809/Bttn/blob/master/Artboard%201.png)
 
 Please use the accompanying guide to setup.

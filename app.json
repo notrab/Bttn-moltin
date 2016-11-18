@@ -1,14 +1,4 @@
 {
   "name": "Bttn Git",
   "description": "TODO: Add a short description about Bttn Git",
-  "keywords": [
-    "small",
-    "sharp",
-    "tool"
-  ],
-  "addons": [],
-  "env": {},
-  "scripts": {
-    "postdeploy": "node bttn.js"
-  }
 }

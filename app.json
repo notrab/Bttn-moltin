@@ -1,4 +1,9 @@
 {
-  "name": "Bttn Git",
-  "description": "TODO: Add a short description about Bttn Git"
+  "name": "Small Sharp Tool",
+  "description": "This app does one little thing, and does it well.",
+  "keywords": [
+    "productivity",
+    "HTML5",
+    "scalpel"
+  ]
 }

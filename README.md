@@ -1,4 +1,4 @@
-![alt tag](https://github.com/matthew1809/Bttn/blob/master/Artboard%201.png)
+![alt tag](https://github.com/matthew1809/Bttn/blob/master/bttn2.png)
 
 Please use the accompanying guide to setup.
 

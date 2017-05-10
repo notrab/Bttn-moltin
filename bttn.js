@@ -94,7 +94,7 @@ bttn.post('/', (req, res) => {
   // No callback provided
   if (req.body.callback === undefined) {
     console.log('Error: No callback URL provided.');
-  }
+  };
 
   // Add the callback to config
   config.callback = req.body.callback;

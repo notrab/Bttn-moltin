@@ -15,20 +15,18 @@ const config = {
   bttnKey: '201410AK582235c87fD8wGNyLYa319zzhjbGX7I3dONmHjs1-lk602BSoEfXi7GB',
   callback: undefined,
   customer: {
-    first_name: 'Jon',
-    last_name: 'Doe',
+    name: 'Jon Doe',
     email: 'jon.doe@gmail.com',
   },
   address: {
     first_name: 'Jon',
     last_name: 'Doe',
-    address_1: '123 Sunny Street',
-    address_2: 'Sunnycreek',
+    line_1: '123 Sunny Street',
+    line_2: 'Sunnycreek',
     city: 'Sunnyvale',
     county: 'California',
     country: 'US',
     postcode: 'CA94040',
-    phone: '6507123124',
   },
   card: {
     number: '4242424242424242',
@@ -39,7 +37,7 @@ const config = {
 };
 
 // Moltin handler
-const purchase = () => {
+function purchase() {
   // Get a moltin instance
   const Moltin = moltin.gateway({
     client_id: config.publicId,
@@ -48,17 +46,15 @@ const purchase = () => {
 
   // Add the item to a cart
   return Moltin.Cart.AddProduct(config.product)
-    .then((cart) => {
-      console.log(cart, 'added product to cart');
-
+    .then(() => {
       return Moltin.Cart.Checkout({
         customer: config.customer,
         shipping_address: config.address,
         billing_address: config.address,
       }).then((order) => {
-        console.log(order, 'checked out');
+        const orderId = order.data.id;
 
-        return Moltin.Orders.Payment({
+        return Moltin.Orders.Payment(orderId, {
           gateway: 'stripe',
           method: 'purchase',
           first_name: 'John',
@@ -67,12 +63,16 @@ const purchase = () => {
           month: '08',
           year: '2020',
           verification_value: '123',
-        }).then((payment) => {
-          console.log(payment, 'paid for the order');
+        }).catch((err) => {
+          console.log('payment failed', err);
         });
+      }).catch((err) => {
+        console.log('checkout failed', err);
       });
+    }).catch((err) => {
+      console.log('add to cart failed', err);
     });
-};
+}
 
 // Start Express
 const bttn = express();
@@ -100,7 +100,7 @@ bttn.post('/', (req, res) => {
   config.callback = req.body.callback;
 
   // Run the purchase function
-  return purchase(() => {
+  return purchase().then(() => {
     // Debug
     console.log('Purchase Success');
 
@@ -127,9 +127,5 @@ bttn.post('/', (req, res) => {
     // Close this request
     res.setHeader('Connection', 'close');
     res.end();
-
-  // Error handler
-  }).catch((status, err) => {
-    console.log(err);
   });
 });

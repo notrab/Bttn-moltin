@@ -6,10 +6,10 @@ var express    = require('express')
 // Variables
 var config = {
   port:      3000,
-  product:   'XXXX',
-  publicId: 'XXXX',
-  secretKey: 'XXXX',
-  bttnKey:   'XXXX',
+  product:   'c393b314-32d8-405e-97e4-6e791d75a042',
+  publicId: 'NN8Q3BO0Ojt32fjUT2zhlGzzaAYigaBiov1KZkS3yL',
+  secretKey: '',
+  bttnKey:   '201410AK582235c87fD8wGNyLYa319zzhjbGX7I3dONmHjs1-lk602BSoEfXi7GB',
   callback:  undefined,
   customer: {
     first_name: 'Jon',
@@ -95,31 +95,54 @@ bttn.post('/', function (req, res) {
 });
 
 // Moltin handler
-var purchase = function(slug, success, error) {
+var purchase = function(success, error) {
 
   // Get a moltin instance
-  var moltin = require('moltin')({publicId: config.publicId, secretKey: config.secretKey});
+  var moltin = require('moltin');
+  var Moltin = moltin.gateway({
+    client_id: config.publicId,
+    client_secret: config.secretKey,
+  });
 
-  // Authenticate
-  moltin.Authenticate(function() {
+  // Add the item to a cart
+return Moltin.Cart.AddProduct(config.product)
 
-    // Add the item to a cart
-    moltin.Cart.Insert(config.product, 1, null, function(item) {
+    .then((cart) => {
+        console.log("added product to cart");
+        Moltin.Cart.Checkout({
+          customer: config.customer,
+          shipping_address: config.address,
+          billing_address: config.address
+        })
 
-      // Create the checkout
-      moltin.Cart.Complete({
-        gateway: 'dummy',
-        customer: config.customer,
-        bill_to: config.address,
-        ship_to: 'bill_to',
-        shipping: 'XXXX'
-      }, function(order) {
+        .then((order) => {
+          console.log("checked out");
+            Moltin.Orders.Payment({
+              gateway: 'stripe',
+              method: "purchase",
+              first_name: "John",
+              last_name: "Doe",
+              number: "4242424242424242",
+              month: "08",
+              year: "2020",
+              verification_value: "123"
+          })
+        })
 
-        // Run the purchase
-        moltin.Checkout.Payment('purchase', order.id, {data: config.card}, success, error);
+          .then((response) => {
+            console.log("paid for the order")
+          })
 
-      }, error);
-    }, error);
-  }, error);
+          .catch((error) => {
+            console.log(error);
+          })
 
+        .catch((error) => {
+          console.log(error);
+        })
+    })
+
+    .catch((error) => {
+      console.log(error);
+    });
 };

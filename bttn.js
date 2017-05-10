@@ -15,31 +15,23 @@ const config = {
   bttnKey: '201410AK582235c87fD8wGNyLYa319zzhjbGX7I3dONmHjs1-lk602BSoEfXi7GB',
   callback: undefined,
   customer: {
-    first_name: 'Jon',
-    last_name: 'Doe',
-    email: 'jon.doe@gmail.com',
+    "name": "Billy",
+    "email": "billy@billy.com"
   },
   address: {
-    first_name: 'Jon',
-    last_name: 'Doe',
-    address_1: '123 Sunny Street',
-    address_2: 'Sunnycreek',
-    city: 'Sunnyvale',
-    county: 'California',
-    country: 'US',
-    postcode: 'CA94040',
-    phone: '6507123124',
-  },
-  card: {
-    number: '4242424242424242',
-    expiry_month: '02',
-    expiry_year: '2017',
-    cvv: '123',
-  },
+      "first_name": "Jack",
+      "last_name": "Macdowall",
+      "company_name": "Macdowalls",
+      "line_1": "1225 Invention Avenue",
+      "line_2": "Birmingham",
+      "postcode": "B21 9AF",
+      "county": "West Midlands",
+      "country": "UK"
+  }
 };
 
 // Moltin handler
-const purchase = () => {
+function purchase() {
   // Get a moltin instance
   const Moltin = moltin.gateway({
     client_id: config.publicId,
@@ -69,9 +61,12 @@ const purchase = () => {
           verification_value: '123',
         }).then((payment) => {
           console.log(payment, 'paid for the order');
-        });
-      });
-    });
+        }).catch((error) => {
+          console.log(error)})
+      }).catch((error) => {
+        console.log(error)})
+    }).catch((error) => {
+      console.log(error)});
 };
 
 // Start Express
@@ -94,13 +89,13 @@ bttn.post('/', (req, res) => {
   // No callback provided
   if (req.body.callback === undefined) {
     console.log('Error: No callback URL provided.');
-  }
+  };
 
   // Add the callback to config
   config.callback = req.body.callback;
 
   // Run the purchase function
-  return purchase(() => {
+  return purchase(function() {
     // Debug
     console.log('Purchase Success');
 

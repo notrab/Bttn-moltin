@@ -89,7 +89,7 @@ bttn.listen(config.port, () => {
 // Listen for a post request
 bttn.post('/', (req, res) => {
   // Debug
-  console.log('Request Received');
+  console.log('You pressed the button!');
 
   // No callback provided
   if (req.body.callback === undefined) {
@@ -99,16 +99,22 @@ bttn.post('/', (req, res) => {
   // Add the callback to config
   config.callback = req.body.callback;
 
+  var start = new Date();
   // Run the purchase function
-  return purchase().then(() => {
+
+  return purchase()
+  .then(() => {
+    var end = new Date() - start;
+    console.info("Execution time: %dms", end);
     // Debug
-    console.log('Purchase Success');
+    console.log('Your product has been ordered');
 
     // Setup the response to bt.tn
     const options = {
       url: config.callback,
       method: 'POST',
       json: true,
+      time : true,
       headers: {
         'X-Api-Key': config.bttnKey,
       },
@@ -120,7 +126,7 @@ bttn.post('/', (req, res) => {
     // Make the callback request
     request(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        console.log('Callback Success');
+        //console.log('Callback Success. Request time in ms is: ' + response.elapsedTime);
       }
     });
 

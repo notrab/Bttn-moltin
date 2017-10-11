@@ -4,14 +4,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
+require('dotenv').config();
 
-const MoltinGateway = require('@moltin/sdk').gateway;
 // Variables
 const config = {
   port: 3000,
   product: '61abf56a-194e-4e13-a717-92d2f0c9d4df',
   publicId: 'j6hSilXRQfxKohTndUuVrErLcSJWP15P347L6Im0M4',
-  secretKey: '',
   bttnKey: '201410AK582235c87fD8wGNyLYa319zzhjbGX7I3dONmHjs1-lk602BSoEfXi7GB',
   callback: undefined,
   customer: {
@@ -36,13 +35,16 @@ const config = {
   },
 };
 
+const MoltinGateway = require('@moltin/sdk').gateway;
+
+// Get a moltin instance
+const Moltin = MoltinGateway({
+  client_id: config.publicId,
+  client_secret: process.env.client_secret,
+});
+
 // Moltin handler
 function purchase() {
-  // Get a moltin instance
-  const Moltin = MoltinGateway({
-    client_id: config.publicId,
-    client_secret: process.env.client_secret,
-  });
 
   // Add the item to a cart
   return Moltin.Cart.AddProduct(config.product)

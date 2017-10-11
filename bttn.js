@@ -4,13 +4,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
-const moltin = require('@moltin/sdk');
 
+const MoltinGateway = require('@moltin/sdk').gateway;
 // Variables
 const config = {
   port: 3000,
-  product: 'c393b314-32d8-405e-97e4-6e791d75a042',
-  publicId: 'NN8Q3BO0Ojt32fjUT2zhlGzzaAYigaBiov1KZkS3yL',
+  product: '61abf56a-194e-4e13-a717-92d2f0c9d4df',
+  publicId: 'j6hSilXRQfxKohTndUuVrErLcSJWP15P347L6Im0M4',
   secretKey: '',
   bttnKey: '201410AK582235c87fD8wGNyLYa319zzhjbGX7I3dONmHjs1-lk602BSoEfXi7GB',
   callback: undefined,
@@ -30,29 +30,42 @@ const config = {
   },
   card: {
     number: '4242424242424242',
-    expiry_month: '02',
-    expiry_year: '2017',
-    cvv: '123',
+    month: '02',
+    year: '2017',
+    verification_value: '123',
   },
 };
 
 // Moltin handler
 function purchase() {
   // Get a moltin instance
-  const Moltin = moltin.gateway({
+  const Moltin = MoltinGateway({
     client_id: config.publicId,
-    client_secret: config.secretKey,
+    client_secret: process.env.client_secret,
   });
 
   // Add the item to a cart
   return Moltin.Cart.AddProduct(config.product)
-    .then(() => {
-      return Moltin.Cart.Checkout({
-        customer: config.customer,
+    .then((cart) => {
+      
+      Moltin.Customers.Create({
+        type: 'customer',
+        username: 'maximusPowerus',
+        name: 'Max Power',
+        email: 'max@power.com',
+        password: 'fakepass',
+        phone_number: '+447732429621'
+      }).then((customer) => {
+
+        return Moltin.Cart.Checkout({
+        customer: {id: customer.data.id},
         shipping_address: config.address,
-        billing_address: config.address,
+        billing_address: config.address
       }).then((order) => {
+        console.log(order);
         const orderId = order.data.id;
+
+        console.log("order created" + orderId)
 
         return Moltin.Orders.Payment(orderId, {
           gateway: 'stripe',
@@ -72,6 +85,12 @@ function purchase() {
     }).catch((err) => {
       console.log('add to cart failed', err);
     });
+
+
+      }).catch((e) => {
+        console.log(e);
+      });
+
 }
 
 // Start Express

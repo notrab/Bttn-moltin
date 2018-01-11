@@ -44,56 +44,47 @@ const Moltin = MoltinGateway({
 });
 
 // Moltin handler
-function purchase() {
+async function purchase() {
 
-  // Add the item to a cart
-  return Moltin.Cart.AddProduct(config.product)
-    .then((cart) => {
-      
-      Moltin.Customers.Create({
-        type: 'customer',
-        username: 'maximusPowerus',
-        name: 'Max Power',
-        email: 'max@power.com',
-        password: 'fakepass',
-        phone_number: '+447732429621'
-      }).then((customer) => {
+  try {
+    // Add the item to a cart
+    var cart = await Moltin.Cart.AddProduct(config.product)
 
-        return Moltin.Cart.Checkout({
-        customer: {id: customer.data.id},
-        shipping_address: config.address,
-        billing_address: config.address
-      }).then((order) => {
-        console.log(order);
-        const orderId = order.data.id;
+    // Create the customer
+    var customer = await Moltin.Customers.Create({
+      type: 'customer',
+      username: 'maximusPowerus',
+      name: 'Max Power',
+      email: 'max@power.com',
+      password: 'fakepass',
+      phone_number: '+447732429621'
+    })
 
-        console.log("order created" + orderId)
-
-        return Moltin.Orders.Payment(orderId, {
-          gateway: 'stripe',
-          method: 'purchase',
-          first_name: 'John',
-          last_name: 'Doe',
-          number: '4242424242424242',
-          month: '08',
-          year: '2020',
-          verification_value: '123',
-        }).catch((err) => {
-          console.log('payment failed', err);
-        });
-      }).catch((err) => {
-        console.log('checkout failed', err);
-      });
-    }).catch((err) => {
-      console.log('add to cart failed', err);
+    // checkout the cart
+    var checkout = await Moltin.Cart.Checkout({
+      customer: {id: customer.data.id},
+      shipping_address: config.address,
+      billing_address: config.address
     });
 
+    // Grab the order ID
+    var orderId = checkout.data.id;
 
-      }).catch((e) => {
-        console.log(e);
-      });
-
-}
+    // Pay for the order
+    var order = await Moltin.Orders.Payment(orderId, {
+      gateway: 'stripe',
+      method: 'purchase',
+      first_name: 'John',
+      last_name: 'Doe',
+      number: '4242424242424242',
+      month: '08',
+      year: '2020',
+      verification_value: '123',
+    });
+  } catch(e) {
+    console.log(e);
+  }
+};
 
 // Start Express
 const bttn = express();
@@ -154,5 +145,7 @@ bttn.post('/', (req, res) => {
     // Close this request
     res.setHeader('Connection', 'close');
     res.end();
-  });
+  }).catch((e) => {
+    console.log(e);
+  })
 });

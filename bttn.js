@@ -11,7 +11,8 @@ const config = {
   port: 3000,
   product: '61abf56a-194e-4e13-a717-92d2f0c9d4df',
   publicId: 'j6hSilXRQfxKohTndUuVrErLcSJWP15P347L6Im0M4',
-  bttnKey: '201410AK582235c87fD8wGNyLYa319zzhjbGX7I3dONmHjs1-lk602BSoEfXi7GB',
+  customerId: 'c4145261-0c5c-4c03-a62f-ad8d66c29d9c',
+  bttnKey: process.env.bttnKey,
   callback: undefined,
   customer: {
     name: 'Jon Doe',
@@ -51,18 +52,18 @@ async function purchase() {
     var cart = await Moltin.Cart.AddProduct(config.product)
 
     // Create the customer
-    var customer = await Moltin.Customers.Create({
-      type: 'customer',
-      username: 'maximusPowerus',
-      name: 'Max Power',
-      email: 'max@power.com',
-      password: 'fakepass',
-      phone_number: '+447732429621'
-    })
+    // var customer = await Moltin.Customers.Create({
+    //   type: 'customer',
+    //   username: 'maximusPowerus',
+    //   name: 'Max Power',
+    //   email: 'max@power.com',
+    //   password: 'fakepass',
+    //   phone_number: '+447732429621'
+    // })
 
     // checkout the cart
     var checkout = await Moltin.Cart.Checkout({
-      customer: {id: customer.data.id},
+      customer: {id: config.customerId},
       shipping_address: config.address,
       billing_address: config.address
     });
@@ -96,6 +97,15 @@ bttn.use(bodyParser.urlencoded({ extended: true }));
 // Start the server
 bttn.listen(config.port, () => {
   console.log(`App listening on port: ${config.port}`);
+});
+
+bttn.get('/products', async (req, res) => {
+  try {
+  var products = await Moltin.Products.All();
+  console.log(product);
+  } catch(e) {
+    console.log(e);
+  }
 });
 
 // Listen for a post request
@@ -138,8 +148,8 @@ bttn.post('/', (req, res) => {
     // Make the callback request
     request(options, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        //console.log('Callback Success. Request time in ms is: ' + response.elapsedTime);
-      }
+        console.log('Callback Success. Request time in ms is: ' + response.elapsedTime);
+      } else(console.log(response));
     });
 
     // Close this request

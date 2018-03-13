@@ -1,0 +1,9 @@
+{
+  "name": "moltin-bttn",
+  "alias": "moltin-bttn",
+  "env": {
+    "NODE_ENV": "production",
+    "BTTN_API_KEY": "@bttn-api-key",
+    "MOLTIN_CLIENT_ID": "@moltin-client-id"
+  }
+}

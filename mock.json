@@ -1,0 +1,20 @@
+{
+  "productId": "61abf56a-194e-4e13-a717-92d2f0c9d4df",
+  "customerId": "c4145261-0c5c-4c03-a62f-ad8d66c29d9c",
+  "address": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "line_1": "2nd Floor British India House",
+    "line_2": "15 Carliol Square",
+    "city": "Newcastle Upon Tyne",
+    "postcode": "NE1 6UF",
+    "county": "Tyne & Wear",
+    "country": "United Kingdom"
+  },
+  "card": {
+    "number": "4242424242424242",
+    "month": "02",
+    "year": "2017",
+    "verification_value": "123"
+  }
+}

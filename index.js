@@ -1,7 +1,9 @@
 const { json } = require('micro')
-const fetch = require('node-fetch');
+const fetch = require('node-fetch')
 
-const { BTTN_API_KEY } = process.env;
+const { productId, customerId, address, card } = require('./mock.json')
+
+const { BTTN_API_KEY } = process.env
 
 const handleBttn = async callback => {
   const response = await fetch(callback, {
@@ -17,16 +19,44 @@ const handleBttn = async callback => {
   return await response.json()
 }
 
+const handleCheckout = async () => {}
+
 module.exports = async (req, res) => {
   const { callback = undefined } = await json(req)
 
   if (!callback) {
-    console.error('No callback URL provided.');
+    console.error('No callback URL provided.')
   }
 
-  const bttn = await handleBttn(callback);
+  try {
+    const cart = await Moltin.Cart.AddProduct(productId)
 
-  return {
-    result: 'success'
+    const { data: { id: orderId } } = await Moltin.Cart.Checkout({
+      customer: {
+        id: customerId
+      },
+      shipping_address: address,
+      billing_address: address
+    })
+
+    await Moltin.Orders.Payment(
+      orderId,
+      Object.assign({}, card, {
+        gateway: 'stripe',
+        method: 'purchase'
+      })
+    )
+
+    const bttn = await handleBttn(callback)
+
+    return {
+      result: 'success'
+    }
+  } catch (e) {
+    console.error(e.message)
+
+    return {
+      result: 'error'
+    }
   }
 }
